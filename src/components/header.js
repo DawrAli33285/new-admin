@@ -78,7 +78,7 @@ export default function Header({ children }) {
                     </span>
                 </div>
             </div>
-            <div className=" shadow-lg  desktop-sidebar lg:w-[20%] hidden lg:flex flex-col py-[40px] px-[20px] gap-[40px]">
+            <div className=" desktop-sidebar lg:w-[20%] hidden lg:flex flex-col py-[40px] px-[20px] gap-[40px]">
                 <span className="w-[190px]">
                     <img src={logo} className="w-full" alt="logo" />
                 </span>
