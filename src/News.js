@@ -60,6 +60,7 @@ export default function News() {
             console.log(response.data)
             setPlayers(responsePlayer?.data?.players)
             setAllArticles(response.data.news)
+         
         } catch (error) {
             if (error?.response && error?.response?.data) {
                 toast.error(error?.response?.data?.error)
@@ -117,6 +118,7 @@ export default function News() {
             toast.success("News feed created")
             setAllArticles([...allArticles, newArticle]);
             handleClose();
+            window.location.reload(true)
         } catch (error) {
             if (error?.response && error?.response?.data) {
                 toast.error(error?.response?.data?.error)

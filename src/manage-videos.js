@@ -68,7 +68,7 @@ export default function ManageVideos() {
             toast.success("Video uploaded successfully")
             newVideo.video = videoget.video
             setVideos([...videos, newVideo]);
-
+window.location.reload(true)
             handleClose();
         } catch (error) {
             console.log(error)
@@ -106,7 +106,7 @@ export default function ManageVideos() {
         }
     };
     const deleteVideo = async (vidid) => {
-
+alert(vidid)
         const filter = videos.filter(vid => vid?._id != vidid);
         try {
             let response = await axios.delete(`${BASE_URL}/delete-video/${vidid}`)

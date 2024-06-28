@@ -84,6 +84,7 @@ let response=await axios.post(`${BASE_URL}/create-testimonial`,formdata)
 toast.success(response.data.message)
 setTestimonials([...testimonials, newTestimonial])
    handleClose();
+   window.location.reload(true)
 }catch(error){
 if(error?.response && error?.response?.data){
     toast.error(error?.response?.data?.error)
