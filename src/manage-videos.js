@@ -106,7 +106,7 @@ window.location.reload(true)
         }
     };
     const deleteVideo = async (vidid) => {
-alert(vidid)
+
         const filter = videos.filter(vid => vid?._id != vidid);
         try {
             let response = await axios.delete(`${BASE_URL}/delete-video/${vidid}`)
