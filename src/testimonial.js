@@ -122,6 +122,7 @@ setTestimonials(filteredarray);
 
     }
     const openEditModal = (id) => {
+
         const testimonialToEdit = testimonials.find((testimonial) => testimonial._id === id);
         setUserName(testimonialToEdit.name);
         setTestimonial(testimonialToEdit.testimonial);
@@ -210,9 +211,9 @@ setTestimonials(filteredarray);
                                     </div>
                                 </div>
                                 <span className='flex justify-end items-center'>
-                                    <div onClick={() => toggleMenu(testimonial.id)} className="relative hover:cursor-pointer bg-white rounded-[100%] w-[30px] h-[30px] flex items-center justify-center">
+                                    <div onClick={() => toggleMenu(testimonial?._id)} className="relative hover:cursor-pointer bg-white rounded-[100%] w-[30px] h-[30px] flex items-center justify-center">
                                         <FaEllipsisV />
-                                        {activeTestimonialId === testimonial.id && (
+                                        {activeTestimonialId === testimonial?._id && (
                                             <div className="video-menu">
                                                 <p className="options" onClick={() => openEditModal(testimonial?._id)}>
                                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

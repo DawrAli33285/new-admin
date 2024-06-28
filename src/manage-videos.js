@@ -106,8 +106,8 @@ export default function ManageVideos() {
         }
     };
     const deleteVideo = async (vidid) => {
-console.log(vidid)
-        const filter = videos.filter(vid => vid._id != vidid);
+
+        const filter = videos.filter(vid => vid?._id != vidid);
         try {
             let response = await axios.delete(`${BASE_URL}/delete-video/${vidid}`)
             toast.success("Video deleted sucessfully")
@@ -126,7 +126,7 @@ console.log(vidid)
 
     }
     const openEditModal = (videoId) => {
-        const videoToEdit = videos.find(vid => vid._id === videoId);
+        const videoToEdit = videos.find(vid => vid?._id === videoId);
         if (videoToEdit) {
             setTitle(videoToEdit.title);
             setDescription(videoToEdit.description);
