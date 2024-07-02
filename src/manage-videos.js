@@ -39,13 +39,13 @@ export default function ManageVideos() {
     };
 
     const handleUpload = async () => {
-        if(files?.length==0){
+        if(files?.length==0 && editModalOpen==false){
             toast.error("Please select a video")
             return false
-        }else if(title?.length==0){
+        }else if(title?.length==0 && editModalOpen==false){
             toast.error("Please enter title")
             return false
-        }else if(description?.length==0){
+        }else if(description?.length==0 && editModalOpen==false){
             toast.error("Please provide description")
             return false
         }

@@ -15,34 +15,39 @@ import ManageVideos from './manage-videos';
 import Register from './Pages/Register/Register';
 import News from './News';
 import Testimonial from './testimonial';
+import Players from './players';
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
   },
   {
-path:'/register',
-element:<Register/>
+    path: '/register',
+    element: <Register />
   },
   {
     path: "/dashboard",
     element: <Header><Dashboard /></Header>,
   },
   {
-    path:"/user-management",
-    element:<Header><UserManagment/></Header>
+    path: "/user-management",
+    element: <Header><UserManagment /></Header>
   },
   {
-    path:"/manage-videos",
-    element:<Header><ManageVideos/></Header>
+    path:"/players",
+    element:<Header><UserManagment /></Header>
   },
   {
-    path:"/news",
-    element:<Header><News /></Header>
+    path: "/manage-videos",
+    element: <Header><ManageVideos /></Header>
   },
   {
-    path:"/testimonial",
-    element:<Header><Testimonial /></Header>
+    path: "/news",
+    element: <Header><News /></Header>
+  },
+  {
+    path: "/testimonial",
+    element: <Header><Testimonial /></Header>
   }
 ]);
 const root = ReactDOM.createRoot(document.getElementById('root'));

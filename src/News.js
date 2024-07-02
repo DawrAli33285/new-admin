@@ -85,16 +85,16 @@ export default function News() {
         let featuredPlayers = selectedPlayers.map((val, i) => {
             return val.value
         })
-        if(files?.length==0){
+        if(files?.length==0 && EditModal==false){
             toast.error("Please select image")
             return false
-        }else if(title?.length==0){
+        }else if(title?.length==0 && EditModal==false){
             toast.error("Please enter title")
        return false
-        }else if(paragraph?.length==0){
+        }else if(paragraph?.length==0 && EditModal==false){
             toast.error("Please enter description")
         return false;
-        }else if(featuredPlayers?.length==0){
+        }else if(featuredPlayers?.length==0 && EditModal==false){
             toast.error("Please mention featured players")
        return false
         }

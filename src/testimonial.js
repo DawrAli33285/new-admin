@@ -54,6 +54,7 @@ console.log(response.data)
 
     const handleUpload = async(e) => {
 
+        
 if(!files[0]){
     toast.error("Please upload a picture")
     return false;
@@ -136,14 +137,14 @@ setTestimonials(filteredarray);
     }
     const handleUpdate =async () => {
 
-        if(!files[0]){
+        if(!files[0] && EditModal==false){
             toast.error("Please upload a picture")
             return false;
-        }else if(userName?.length==0 || !userName){
+        }else if(userName?.length==0 || !userName && EditModal==false){
             toast.error("Please enter title")
            
             return false;
-        }else if(testimonial?.length==0 || !testimonial){
+        }else if(testimonial?.length==0 || !testimonial && EditModal==false){
             toast.error("Please enter testimonial")
             return false;
         }
