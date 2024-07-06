@@ -13,10 +13,60 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 export default function UserManagement() {
+    const [offerFields, setOfferFields] = useState([
+        {  university: '', date: '', status: '', logo: null }
+      ]);
+    
+    
+      const handleInputChange = (index, fieldName, value) => {
+        const updatedFields = offerFields.map((field, idx) => {
+          if (idx === index) {
+            return { ...field, [fieldName]: value };
+          }
+          return field;
+        });
+        setOfferFields(updatedFields);
+      };
 
+      
+    
+      const { getRootProps: getRootPropstwo, getInputProps: getInputPropstwo } = useDropzone({
+        accept: 'image/*',
+        multiple: false,
+        onDrop: (acceptedFiles) => {
+            console.log("FIELD")
+            console.log(acceptedFiles)
+            const updatedFields = offerFields.map((field, idx) => {
+          
+            if (idx === offerFields.length - 1) { // Assuming you are adding a new offer field at the end
+              return { ...field, logo: acceptedFiles[0],logoid:idx};
+            }
+            return field;
+          });
+          setOfferFields(updatedFields);
+        }
+      });
+
+
+
+      const handleFileInputChange = (e, index) => {
+        const file = e.target.files[0];
+        const updatedFields = offerFields.map((field, idx) => {
+          if (idx === index) {
+            return { ...field, logo: file, logoid: idx };
+          }
+          return field;
+        });
+        console.log("UPDATEDFIELDS")
+        console.log(updatedFields)
+        setOfferFields(updatedFields);
+      };
+
+      const addOfferField = () => {
+        setOfferFields([...offerFields, { schoolName: '', offerDate: '', offerStatus: '', logo: null }]);
+      };
     const [data, setData] = useState([
-        { id: 1, Playername: 'John Doe', email: 'john@example.com', mobile: '1234567890', position: 'Head Coach', location: 'NY', registrationDate: '2023-06-01', status: 'Active', image: 'https://static.vecteezy.com/system/resources/thumbnails/008/846/297/small_2x/cute-boy-avatar-png.png' },
-        { id: 2, Playername: 'Jane Smith', email: 'jane@example.com', mobile: '0987654321', position: 'Assistant Coach', location: 'CA', registrationDate: '2023-05-15', status: 'pending', image: 'https://static.vecteezy.com/system/resources/thumbnails/008/846/297/small_2x/cute-boy-avatar-png.png' },
+       
     ])
     const [currentPage, setCurrentPage] = useState(1);
     const [selectedStatus, setSelectedStatus] = useState('All');
@@ -67,14 +117,16 @@ export default function UserManagement() {
         pf:'',
         to:'',
         pts:'',
+        offers:[]
 
     });
     const [editData, setEdiData] = useState(null)
     const [activeVideoId, setActiveVideoId] = useState(null);
     const [players, setPlayers] = useState([
-        { id: 1, playerName: 'John Doe', email: 'john@example.com', mobile: '1234567890', position: 'Head Coach', location: 'NY', registrationDate: '2023-06-01', status: 'active', image: 'https://static.vecteezy.com/system/resources/thumbnails/008/846/297/small_2x/cute-boy-avatar-png.png' },
-        { id: 2, playerName: 'Jane Smith', email: 'jane@example.com', mobile: '0987654321', position: 'Assistant Coach', location: 'CA', registrationDate: '2023-05-15', status: 'pending', image: 'https://static.vecteezy.com/system/resources/thumbnails/008/846/297/small_2x/cute-boy-avatar-png.png' },
+       
     ]);
+    
+
     const [files, setFiles] = useState([]);
     const onDrop = (acceptedFiles) => {
         setFiles(acceptedFiles);
@@ -94,6 +146,7 @@ export default function UserManagement() {
             schoolName: '',
             jerseyNumber: '',
             height: '',
+            offers:[],
             weight: '',
             coach: {
                 phone: '',
@@ -156,8 +209,7 @@ export default function UserManagement() {
             previousCoachName: newPlayerData.previousCoachName,
             coachPhone: newPlayerData.coachPhone,
         };
-        console.log("NEW PLAYER")
-        console.log(newPlayer)
+
         try {
             let name = newPlayer.playerName + ' ' + newPlayer.lastName
             let athleticAccomplishments = [newPlayer.athleticAccomplishments]
@@ -196,6 +248,9 @@ export default function UserManagement() {
                 to:newPlayerData.to,
                 pts:newPlayerData.pts,
             }
+            console.log("Offer fields")
+            console.log(offerFields)
+
 
             let formdata = new FormData();
             formdata.append('email', newPlayer.email)
@@ -212,11 +267,16 @@ export default function UserManagement() {
             formdata.append('coach', JSON.stringify(coach))
             formdata.append('picture', files[0])
             formdata.append('playerClass', newPlayer.position)
+            formdata.append('offers',JSON.stringify(offerFields))
             formdata.append('position', 'PG')
             formdata.append('location', newPlayer.location)
             formdata.append('phoneNumber', newPlayer.mobile)
             formdata.append('stats', JSON.stringify(stats))
             formdata.append('previousCoachName',newPlayer.previousCoachName)
+          offerFields?.map((val,i)=>{
+            formdata.append('logo',val.logo)
+          })
+          
             let response = await axios.post(`${BASE_URL}/create-player`, formdata)
             setPlayers([...players, newPlayer]);
             handleCloseModal();
@@ -301,6 +361,19 @@ export default function UserManagement() {
         setEditID(row._id);
         setEditModal(true);
         const playerToEdit = players.find(player => player._id === row._id);
+        setOfferFields([]);
+        playerToEdit?.profile?.offers?.forEach((val) => {
+            setOfferFields(prevFields => [
+              ...prevFields,
+              {
+                schoolName: val?.university,
+                offerDate: new Date(val?.date).toISOString().split('T')[0],
+                offerStatus: val?.status,
+                logo: val?.logo
+              }
+            ]);
+          });
+
         setNewPlayerData({
             
             ...playerToEdit,
@@ -371,6 +444,20 @@ export default function UserManagement() {
         formdata.append('phoneNumber', newPlayerData.auth.phoneNumber)
         formdata.append('stats', JSON.stringify(newPlayerData?.profile?.stats))
         formdata.append('previousCoachName',newPlayerData.previousCoachName)
+        const transformedOffers = offerFields.map((offer) => ({
+            university: offer.schoolName,
+            date: offer.offerDate,
+            status: offer.offerStatus,
+            logo: offer.logo,
+            logoid:offer.logoid
+          }));
+        formdata.append('offers',JSON.stringify(transformedOffers))
+        offerFields?.map((val,i)=>{
+            formdata.append('logo',val.logo)
+          })
+          console.log("EDIT OFFERS")
+          console.log(offerFields)
+
         try{
             let response = await axios.post(`${BASE_URL}/create-player`, formdata)
             toast.success("Edited sucessfully")
@@ -803,6 +890,62 @@ export default function UserManagement() {
                                 onChange={(e) => setNewPlayerData({ ...newPlayerData, coachPhone: e.target.value })}
                             />
                         </Form.Group>
+
+
+<Form.Group controlId="formLogoSchoolOffer" className="mt-[10px] flex flex-col gap-[20px]">
+    <Form.Label>Logo</Form.Label>
+    {/* Assuming Dropzone component is used for logo upload */}
+    {offerFields.map((offer, index) => (
+        <Form.Group key={index} controlId={`offerField_${index}`}>
+          <Form.Control
+            type="text"
+            placeholder="University Name"
+            value={offer.university}
+            onChange={(e) => handleInputChange(index, 'university', e.target.value)}
+          />
+          <Form.Control
+            type="date"
+            placeholder="Offer Date"
+            value={offer.date}
+            onChange={(e) => handleInputChange(index, 'date', e.target.value)}
+          />
+          <Form.Control
+            as="select"
+            value={offer.status}
+            onChange={(e) => handleInputChange(index, 'status', e.target.value)}
+          >
+            <option value="">Select Offer Status</option>
+            <option value="Offered">Offered</option>
+            <option value="Transferred">Transferred</option>
+            {/* Add more options if needed */}
+          </Form.Control>
+          <div className="border border-dashed border-gray-400 p-4 rounded-[10px] text-center mb-4">
+            <label className="block">
+              <input type="file" className="hidden" onChange={(e) => handleFileInputChange(e, index)} />
+              <p className="media-guide hover:cursor-pointer">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M7.38948 8.98452H6.45648C4.42148 8.98452 2.77148 10.6345 2.77148 12.6695V17.5445C2.77148 19.5785 4.42148 21.2285 6.45648 21.2285H17.5865C19.6215 21.2285 21.2715 19.5785 21.2715 17.5445V12.6595C21.2715 10.6305 19.6265 8.98452 17.5975 8.98452L16.6545 8.98452" stroke="#130F26" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M12.0215 2.19142V14.2324" stroke="#130F26" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M9.10645 5.11914L12.0214 2.19114L14.9374 5.11914" stroke="#130F26" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                Upload Logo
+              </p>
+            </label>
+            {offer.logo && (
+              <div>
+                <h4>Selected file:</h4>
+                <ul>
+                  <li>{offer.logo.name} - {offer.logo.size} bytes</li>
+                </ul>
+              </div>
+            )}
+          </div>
+        </Form.Group>
+      ))}
+<Button variant="primary" onClick={addOfferField}>
+    + Add More
+</Button>
+</Form.Group>
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
@@ -1088,7 +1231,7 @@ export default function UserManagement() {
                                 type="text"
                                 placeholder="Class"
                                 value={newPlayerData?.class}
-                                onChange={(e) => setNewPlayerData({ ...newPlayerData, playerClass: e.target.value })}
+                                onChange={(e) => setNewPlayerData({ ...newPlayerData, class: e.target.value })}
                             />
                             <Form.Group controlId="formBirthplace" className=" mt-[10px] flex flex-col gap-[20px]">
                                 <Form.Label>Birthplace</Form.Label>
@@ -1314,6 +1457,56 @@ export default function UserManagement() {
                                 }})}
                             />
                         </Form.Group>
+                        {/* offers*/}
+                        {offerFields.map((offer, index) => (
+        <div key={index} className="border border-dashed border-gray-400 p-4 rounded-[10px] text-center mb-4">
+          <Form.Control
+            type="text"
+            placeholder="School Name"
+            value={offer.schoolName}
+            onChange={(e) => handleInputChange(index, 'schoolName', e.target.value)}
+          />
+          <Form.Control
+            type="date"
+            placeholder="Offer Date"
+            value={offer.offerDate}
+            onChange={(e) => handleInputChange(index, 'offerDate', e.target.value)}
+          />
+          <Form.Control
+            as="select"
+            value={offer.offerStatus}
+            onChange={(e) => handleInputChange(index, 'offerStatus', e.target.value)}
+          >
+            <option value="">Select Offer Status</option>
+            <option value="Offered">Offered</option>
+            <option value="Transferred">Transferred</option>
+            {/* Add more options if needed */}
+          </Form.Control>
+          <label className="border border-dashed border-gray-400 p-4 rounded-[10px] text-center mb-4 block">
+            <input type="file" className="hidden" onChange={(e) => handleFileInputChange(e, index)} />
+            <p className="media-guide hover:cursor-pointer">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7.38948 8.98452H6.45648C4.42148 8.98452 2.77148 10.6345 2.77148 12.6695V17.5445C2.77148 19.5785 4.42148 21.2285 6.45648 21.2285H17.5865C19.6215 21.2285 21.2715 19.5785 21.2715 17.5445V12.6595C21.2715 10.6305 19.6265 8.98452 17.5975 8.98452L16.6545 8.98452" stroke="#130F26" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M12.0215 2.19142V14.2324" stroke="#130F26" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M9.10645 5.11914L12.0214 2.19114L14.9374 5.11914" stroke="#130F26" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              Upload Logo
+            </p>
+            {offer.logo && (
+              <div>
+                <h4>Selected file:</h4>
+                <ul>
+                  <li>{offer.logo.name} - {offer.logo.size} bytes</li>
+                </ul>
+              </div>
+            )}
+          </label>
+        </div>
+      ))}
+      
+      <Button variant="primary" onClick={addOfferField}>
+        + Add More
+      </Button>
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
